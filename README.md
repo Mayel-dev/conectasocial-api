@@ -34,7 +34,7 @@ docker network rm conectasocial-pc4-local
 ## Conectar AppTier con DataTier en EC2
 
 1. Coloca ambas instancias en la misma VPC con conectividad por IP privada. Asigna un grupo de seguridad dedicado a AppTier y otro a DataTier. En el grupo de DataTier, configura la entrada **TCP 27017 con el ID del grupo de AppTier como único origen**. Revisa todos los grupos asociados a DataTier y elimina cualquier entrada más amplia para ese puerto, incluidas `0.0.0.0/0` y `::/0`. Si restringiste la salida de AppTier, permite TCP 27017 hacia el grupo de DataTier. [Referencias entre grupos de seguridad de AWS](https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html)
-2. En DataTier, comprueba con `docker ps` que el contenedor de la PC3 publica el puerto 27017 en la IP privada de la instancia y que `mongod` escucha en la interfaz del contenedor. Un mapeo apropiado al configurar el contenedor es `-p IP_PRIVADA_DATATIER:27017:27017`. Usa la base y el volumen existentes de la PC3. [Puertos publicados en Docker](https://docs.docker.com/engine/network/port-publishing/)
+2. En DataTier, comprueba con `docker ps` que el puerto 27017 del contenedor de la PC3 está publicado en la IP privada de la instancia. Un mapeo apropiado es `-p IP_PRIVADA_DATATIER:27017:27017`. Usa la base y el volumen existentes de la PC3. La consulta desde AppTier del paso 4 comprueba que MongoDB acepta conexiones por esa ruta. [Puertos publicados en Docker](https://docs.docker.com/engine/network/port-publishing/)
 3. En AppTier, construye la imagen como se indica arriba. Crea el archivo de configuración con permisos de lectura y escritura solo para tu usuario.
 
    ```bash
