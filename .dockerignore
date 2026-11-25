@@ -2,3 +2,5 @@
 !requirements.txt
 !main.py
 !database.py
+!auth.py
+!crear_usuarios.py

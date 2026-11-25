@@ -1,17 +1,16 @@
 import os
-from contextlib import asynccontextmanager
+from contextlib import contextmanager
 
-from fastapi import FastAPI
 from pymongo import MongoClient
 from pymongo.errors import ConfigurationError, InvalidName
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
+@contextmanager
+def abrir_base():
     uri = os.getenv("MONGO_URI")
     nombre_db = os.getenv("MONGO_DB", "conectasocial_db")
     if not uri:
-        raise RuntimeError("Configura MONGO_URI antes de iniciar la API.")
+        raise RuntimeError("Configura MONGO_URI para conectar con MongoDB.")
 
     try:
         cliente = MongoClient(uri, serverSelectionTimeoutMS=3000)
@@ -20,7 +19,7 @@ async def lifespan(app: FastAPI):
 
     with cliente:
         try:
-            app.state.publicaciones = cliente[nombre_db]["publicaciones"]
+            base = cliente[nombre_db]
         except InvalidName:
             raise RuntimeError("Revisa el nombre indicado en MONGO_DB.") from None
-        yield
+        yield base
